@@ -1,12 +1,11 @@
-#基礎語法
-# 定義
-yield_strength=250
-applied_stress=180
-#算安全係數
-safety_factor=yield_strength/applied_stress
-print(f'sf={safety_factor}')
-#判定
-if safety_factor >= 1.5:
-    print('safe')
-else:
-    print('danger')    
+#funtion
+#定義
+def calculate_safety_factor(yield_strength,applied_stress):
+    import math #需要數學符號時須使用,如pi
+    #算 sf
+    safety_factor = yield_strength / applied_stress
+    return safety_factor
+
+#應用
+safety_factor = calculate_safety_factor(100, 50) #從這改參數
+print(f'Safety Factor: {safety_factor}')
