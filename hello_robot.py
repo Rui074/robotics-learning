@@ -1,16 +1,15 @@
 #practice
-robot_motor =[
-    {
-        "name": "Motor1",
-        "current": 1.5
+robot_motor = {
+    "Motor1": {
+        "current": 1.5, 
+        "voltage": 12.0
     },
-    {
-        "name": "Motor2",
-        "current": 2.0
+    "Motor2": {
+        "current": 2.0,
+        "voltage": 10.0
     }
-]
-for motor in robot_motor:
-    if motor["current"] >= 2.0:
-        print(f"{motor['name']} is drawing too much current: {motor['current']}A")
-    else:
-        print(f"{motor['name']} is operating within safe limits: {motor['current']}A")
+}
+for motor_specs in robot_motor:
+    motor = robot_motor[motor_specs]
+    power = motor["current"] * motor["voltage"]
+    print(f"{motor_specs} Power: {power} Watts")
