@@ -1,6 +1,7 @@
-#list
-current_data=[1.2, 1.5, 2.8, 4.2, 1.1]
-print(current_data[0]) 
-print(current_data[-1])
-current_data.append(3.5)
-print(current_data)
+#practice
+laser_readings=[10.02, 9.98, -999.0, 10.01, -999.0, 9.99]
+clean_readings=[]
+for reading in laser_readings:
+    if reading != -999.0:
+        clean_readings.append(reading)
+print(clean_readings)
