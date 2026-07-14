@@ -1,24 +1,18 @@
 #practice
-# 輪胎材質壽命極限字典 (磨損率超過這個百分比就必須強迫進站)
-tire_specs = {
-    "Soft": 60,    # 軟胎磨損大於 60% 就完蛋
-    "Medium": 75,  # 中性胎壽命極限 75%
-    "Hard": 85     # 硬胎壽命極限 85%
+# 實驗做完後，得到的 8 筆工件最大承受應力數據 (單位: MPa)
+raw_stresses = [250, 420, 180, 510, 310, 480, 150, 620]
+
+classified_data = {
+    "Low_Stress": [],    # 用來放小於 300 的數據
+    "Medium_Stress": [], # 用來放 300 到 500 之間的數據 (包含 300 和 500)
+    "High_Stress": []    # 用來放大於 500 的數據
 }
 
-# 目前賽車上的四條輪胎即時狀況
-current_car_status = {
-    "type": "Medium",  # 目前車上裝的是中性胎
-    "wear_percentage": {
-        "Front-Left": 72,
-        "Front-Right": 76,  # 噢不，這條磨損超標了
-        "Rear-Left": 68,
-        "Rear-Right": 69
-    }
-}
-
-for tire, wear in current_car_status["wear_percentage"].items():
-    if wear > tire_specs[current_car_status["type"]]:
-        print(f"{tire} tire wear is {wear}%, which exceeds the limit for {current_car_status['type']} tires. Pit stop required!")
+for stress in raw_stresses:
+    if stress < 300:
+        classified_data["Low_Stress"].append(stress)
+    elif 300 <= stress <= 500:
+        classified_data["Medium_Stress"].append(stress)
     else:
-        print(f"{tire} tire wear is {wear}%, which is within the safe limit for {current_car_status['type']} tires.")
+        classified_data["High_Stress"].append(stress)
+print(classified_data)
