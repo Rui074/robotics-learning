@@ -1,7 +1,10 @@
-#practice
-laser_readings=[10.02, 9.98, -999.0, 10.01, -999.0, 9.99]
-clean_readings=[]
-for reading in laser_readings:
-    if reading != -999.0:
-        clean_readings.append(reading)
-print(clean_readings)
+#dictionary
+motor_spec = {
+    "max_speed": 100, #rpm
+    "max_torque": 50, #Nm
+    "operating_voltage": 12 #V
+}
+print(motor_spec["max_speed"])
+motor_spec["max_speed"] = 120
+motor_spec["mass"] = 60
+print(motor_spec)
