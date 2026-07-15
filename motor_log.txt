@@ -1,0 +1,4 @@
+--- 機器人硬體測試紀錄 ---
+Motor1 current: 1.5A
+Motor2 current: 2.0A
+測試結束，系統一切正常。
