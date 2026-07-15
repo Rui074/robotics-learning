@@ -1,19 +1,44 @@
 # practice
+class Motor:
+    def __init__(self, motor_name, max_current):
+        self.name = motor_name
+        self.current = 0.0
+        self.limit = max_current
+        self.is_active = True 
+        
+    def run(self, input_current):
+        if not self.is_active:
+            print(f"❌ 拒絕執行：{self.name} 已經被緊急斷電，無法運轉！")
+            return
+            
+        self.current = input_current
+        print(f"[{self.name}] 正在運轉，目前電流：{self.current} A")
+        
+        if self.current >= self.limit:
+            print(f"⚠️ 警告：{self.name} 電流超載！")
+            self.emergency_stop()
 
-# 1. 使用 'w' (Write) 模式：打開一個檔案準備寫入。如果檔案不存在，Python 會自動幫你建立！
-# with open("檔名", "模式", encoding="utf-8") as 變數:
-with open("motor_log.txt", "w", encoding="utf-8") as file:
-    # 2. 寫入資料，跟 print 很像，但要在最後手動加上 "\n" 來換行
-    file.write("--- 機器人硬體測試紀錄 ---\n")
-    file.write("Motor1 current: 1.5A\n")
-    file.write("Motor2 current: 2.0A\n")
-    file.write("測試結束，系統一切正常。\n")
+    def emergency_stop(self):
+        self.is_active = False
+        
+        # 1. 先把超載時的錯誤訊息準備好
+        error_msg = f"🚨 警報：{self.name} 發生電流超載！超載數值：{self.current} A (上限為 {self.limit} A)\n"
+        
+        # 2. 【請在這邊寫】：
+        # 請用 with open 開啟一個叫 "error_log.txt" 的檔案
+        # 記得要用「累加模式 ('a')」喔！這樣才不會把之前的報警紀錄洗掉。
+        # 編碼請設定為 utf-8
+        with open("error_log.txt", "a", encoding="utf-8") as log_file:
+            # 3. 【請在這邊寫】：
+            # 把上面準備好的 error_msg 寫入檔案中
+            log_file.write(error_msg)
+            
+        self.current = 0.0
+        print(f"🚨 系統：{self.name} 已強制緊急斷電，並已記錄至 log 中！")
+        # 建立兩顆不同的馬達
+motor_A = Motor("Axis_1_Motor", 3.0)
+motor_B = Motor("Axis_2_Motor", 1.5)
 
-print("📝 檔案寫入成功！快去左邊的專案資料夾看看有沒有多出 motor_log.txt！")
-# 1. 使用 'r' (Read) 模式打開檔案
-with open("motor_log.txt", "r", encoding="utf-8") as file:
-    # 2. 用 .read() 一次把整張紙的內容讀成一個大字串
-    content = file.read()
-    
-print("📖 讀取檔案內容如下：")
-print(content)
+# 讓它們輪流超載
+motor_A.run(4.2)  # 超載！應該寫入第一筆 log
+motor_B.run(2.0)  # 超載！應該寫入第二筆 log
