@@ -1,26 +1,40 @@
-# 1. 用 class 關鍵字宣告藍圖，名字開頭通常大寫
+# practice
 class Motor:
-    
-    # 這是「初始化構造函式」── 規定馬達一出生，必須帶有什麼規格
     def __init__(self, motor_name, max_current):
-        self.name = motor_name       # 馬達的名字
-        self.current = 0.0           # 剛出廠時，即時電流預設為 0.0A
-        self.limit = max_current     # 這顆馬達的安全電流上限值
+        self.name = motor_name
+        self.current = 0.0
+        self.limit = max_current
+        # 新增一個屬性：記錄馬達現在是否啟動 (True 表示啟動，False 表示斷電)
+        self.is_active = True 
         
-    # 這是內建在馬達肚子裡的功能 (Method) ── 模擬馬達運轉運作
     def run(self, input_current):
-        self.current = input_current # 更新目前電流
+        # 如果已經斷電，就不准運轉！
+        if not self.is_active:
+            print(f"❌ 拒絕執行：{self.name} 已經被緊急斷電，無法運轉！")
+            return
+            
+        self.current = input_current
         print(f"[{self.name}] 正在運轉，目前電流：{self.current} A")
         
-        # 直接把昨天的 if-else 自控邏輯內建進來！
         if self.current >= self.limit:
-            print(f"警告：{self.name} 電流超載！上限為 {self.limit} A")
-            # 2. 實例化 (Instantiation) ── 依照藍圖做出真實的馬達物件
-# 這邊丟進去的參數，會直接傳給 __init__ 裡面的 motor_name 和 max_current
-left_motor = Motor("Left_Drive", 3.0)   # 製造左輪馬達，限流 3.0A
-arm_motor = Motor("Arm_Lift", 2.0)      # 製造手臂馬達，限流 2.0A
+            print(f"⚠️ 警告：{self.name} 電流超載！")
+            # 超載了！立刻呼叫我們肚子裡的緊急斷電功能
+            self.emergency_stop()
 
-# 3. 叫它們各自做動作！用「點 .」來呼叫功能
-print("--- 機器人啟動 ---")
-left_motor.run(1.5)  # 給左輪 1.5A 電流
-arm_motor.run(2.5)   # 給手臂 2.5A 電流（這會觸發超載警告！）
+    def emergency_stop(self):
+        self.is_active = False
+        self.current = 0.0
+
+        print(f"🚨 系統：{self.name} 已強制緊急斷電！")
+
+# 製造一個超載極限只有 2.0A 的馬達
+test_motor = Motor("Lifter_Motor", 2.0)
+
+# 正常運轉 (1.5A < 2.0A) -> 應該順利運轉
+test_motor.run(1.5) 
+
+# 超載運轉 (2.5A >= 2.0A) -> 應該觸發超載、自動呼叫緊急斷電、再拒絕下一次運轉
+test_motor.run(2.5) 
+
+# 斷電後嘗試再次運轉 -> 應該被拒絕
+test_motor.run(1.0)
