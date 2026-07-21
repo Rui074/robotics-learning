@@ -1,32 +1,21 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-# 這是橫向發展的矩陣：每一列 (Row) 代表一顆馬達的所有時間數據
-raw_data = np.array([
-    [1.5, 3.2, 1.8, 1.2],  # Motor 1
-    [1.2, 1.4, 4.5, 1.1],  # Motor 2
-    [1.0, 1.1, 1.2, 1.3]   # Motor 3
-])
+# 數據：時間與電流
+time = np.arange(6)
+current = np.array([1.2, 2.8, 3.5, 1.8, 4.1, 2.0])
 
-matrix_current = raw_data.T
+# 1. 找出超過 3.0 的過載條件（布林遮罩）
+overload_mask = current > 3.0
 
-total_current = np.sum(matrix_current, axis=1)
-print("Total current at each time step:", total_current)
+# 2. 畫出原本的電流折線圖
+plt.plot(time, current, label='Current (A)', color='blue', marker='o')
 
+# 3. 關鍵突破：只把「過載的時間點」與「過載的電流值」抓出來畫紅點！
+plt.scatter(time[overload_mask], current[overload_mask], 
+            color='red', s=150, zorder=5, label='Overload Warning')
 
-#劃出各馬達和總和的電流隨時間圖
-
-time = np.arange(4) # 時間點 0, 1, 2, 3
-
-# 這時候 matrix_current 的行 (Column) 分別就是 Motor 1, 2, 3
-for i in range(matrix_current.shape[1]):
-    plt.plot(time, matrix_current[:, i], label=f'Motor {i+1}', marker='o')
-
-# 把總電流也畫上去（長度同樣是 4，完美對齊！）
-plt.plot(time, total_current, linestyle='--', label='Total Current', marker='s')
-plt.title('Current Over Time')    
-plt.xlabel('Time Step')
-plt.ylabel('Current (A)')
-plt.legend()    
-plt.grid()
+plt.axhline(y=3.0, color='r', linestyle='--', label='Limit (3.0A)') # 3.0A 警戒線
+plt.legend()
+plt.grid(True)
 plt.show()
