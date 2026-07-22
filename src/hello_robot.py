@@ -1,23 +1,39 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-# 機器人每一次移動的相對位移 (dx, dy)
-dx = np.array([1.0,  1.5,  0.5, -1.0, -0.5])
-dy = np.array([0.5,  1.0,  2.0,  1.5, -1.0])
-x_path = np.cumsum(dx)  # 結果會是：[1.0, 2.5, 3.0, 2.0, 1.5]
-y_path = np.cumsum(dy)  # 結果會是：[0.5, 1.5, 3.5, 5.0, 4.0]
-path_matrix = np.column_stack((x_path, y_path))  # 將 x_path 與 y_path 組合成一個二維矩陣
-print("機器人的移動路徑矩陣:" , path_matrix)
+# 1. 模擬時間軸與左右輪速數據 (單位: m/s)
+time = np.arange(8)
+speed_left = np.array([1.0, 1.0, 3.0, 3.0, 1.0, -1.0, 1.0, 1.0])  
+speed_right = np.array([1.0, 1.0, 0.5, -1.0, 1.0,  3.0, 1.0, 1.0]) 
 
-# 繪製機器人的移動路徑
+# 2. 計算轉向差速 (左輪速 - 右輪速)
+# NumPy 陣列可以直接相減，這會算出每一個時間點的速度差！
+speed_diff = speed_left - speed_right
+
+# 3. 開啟畫布並設定大小
 plt.figure(figsize=(8, 6))
-plt.plot(x_path, y_path, marker='o', linestyle='-', color='b')
-plt.title('Robot Movement Path')
-plt.xlabel('X Position')
-plt.ylabel('Y Position')
-plt.scatter(0.0, 0.0, color='green', label='Start Position')  # 標記起始位置
-plt.scatter(x_path[-1], y_path[-1], color='red', label='End Position')  # 標記終點位置
+
+# ======== 第一張圖：左右輪速原始數據 ========
+plt.subplot(2, 1, 1) # 參數意義：2列, 1行, 第1張圖 (上半部)
+plt.plot(time, speed_left, label='Left Wheel', marker='o', color='blue')
+plt.plot(time, speed_right, label='Right Wheel', marker='o', color='green')
+plt.ylabel('Speed (m/s)')
+plt.title('Chassis Telemetry: Wheel Speeds & Turning Differential')
 plt.grid(True)
-plt.axis('equal')
 plt.legend()
+
+# ======== 第二張圖：轉向差速 (Yaw Rate) ========
+plt.subplot(2, 1, 2) # 參數意義：2列, 1行, 第2張圖 (下半部)
+plt.plot(time, speed_diff, label='Speed Diff (Left - Right)', marker='s', color='purple')
+
+# 畫一條 Y=0 的紅色虛線，代表「完美直行」的基準線
+plt.axhline(0, color='red', linestyle='--', label='Zero Turn (Straight)')
+
+plt.ylabel('Delta Speed (m/s)')
+plt.xlabel('Time (s)')
+plt.grid(True)
+plt.legend()
+
+# 自動調整排版，避免上下兩張圖的字疊在一起
+plt.tight_layout() 
 plt.show()
