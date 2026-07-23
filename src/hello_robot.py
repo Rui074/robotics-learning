@@ -1,38 +1,36 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-# 遙測數據
-time = np.arange(7)
-left_vel = np.array([2.0, 3.0, 3.0, -1.5, -2.0, 1.0, 0.0])
-right_vel = np.array([2.0, 1.0, 3.0, -1.5,  2.0, 1.0, 0.0])
-# 2. 計算平均速度 ((左輪速 + 右輪速)/2
-center_vel = (left_vel + right_vel) / 2
+# 模擬超音波數據 (機器人靠近牆壁)
+np.random.seed(100)
+time = np.linspace(0, 10, 40)
+true_dist = np.linspace(5.0, 0.5, 40)
+raw_distance = true_dist + np.random.normal(0, 0.4, 40) # 帶有雜訊的測距值
 
-# 3. 開啟畫布並設定大小
-plt.figure(figsize=(8, 6))
+# 2.距離平均  (Window Size = 3)
+smooth_distance = np.zeros_like(raw_distance) # 建立一個同維度的空陣列
 
-# ======== 第一張圖：左右輪速原始數據 ========
-plt.subplot(2, 1, 1) # 參數意義：2列, 1行, 第1張圖 (上半部)
-plt.plot(time, left_vel, label='Left Wheel', marker='o', color='blue')
-plt.plot(time, right_vel, label='Right Wheel', marker='o', color='green')
-plt.ylabel('Speed (m/s)')
-plt.title('Chassis Telemetry: Wheel Speeds and center_vel')
-plt.grid(True)
-plt.legend()
+# 利用 NumPy 邊界切片算平均
+for i in range(len(raw_distance)):
+    if i < 2:
+        smooth_distance[i] = raw_distance[i] 
+    elif i >= len(raw_distance) - 2:
+        smooth_distance[i] = raw_distance[i] 
+    else:
+        # 關鍵：取 [前後兩點加自己] 的平均
+        smooth_distance[i] = np.mean(raw_distance[i-2 : i+3])
 
-# ======== 第二張圖：平均速度 ========
-plt.subplot(2, 1, 2) # 參數意義：2列, 1行, 第2張圖 (下半部)
-plt.plot(time, center_vel, label='Average Speed', marker='s', color='purple')
+# 3. 視覺化對比：原始雜訊 vs 距離平滑數據
+plt.figure(figsize=(10, 5))
+plt.plot(time, raw_distance, label='Raw Distance (Noisy)', color='gray', alpha=0.5, linestyle='--')
+plt.plot(time, smooth_distance, label='Filtered Distance (Smoothed)', color='blue', linewidth=2)
+plt.axhline(y=1.0, color='red', linestyle=':', label='Safety Margin (1.0m)') 
+unsafe_mask = smooth_distance < 1.0
+plt.scatter(time[unsafe_mask], smooth_distance[unsafe_mask], label='Unsafe Points', color='red', alpha=1, s=50) # 標記低於安全距離的點
 
-# 畫一條 Y=0 的紅色虛線，代表「完美直行」的基準線
-plt.axhline(0, color='red', linestyle='--', label='stop')
-#(中心速度小於0)
-plt.scatter(time[center_vel < 0], center_vel[center_vel < 0], color='red', marker='x', s=100)
-plt.ylabel('center_vel (m/s)')
+plt.title('Distance Filtering (5-Point Moving Average)')
 plt.xlabel('Time (s)')
+plt.ylabel('Distance (m)')
 plt.grid(True)
 plt.legend()
-
-# 自動調整排版，避免上下兩張圖的字疊在一起
-plt.tight_layout() 
 plt.show()
