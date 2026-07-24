@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy.integrate import solve_ivp
 
 # 固定隨機種子
 np.random.seed(2026)
